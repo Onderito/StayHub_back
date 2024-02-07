@@ -1,21 +1,34 @@
-const { Accomodation } = require("../models");
+const { Accommodation } = require("../models");
+const multer = require("multer");
+
+// Configuration de Multer pour le stockage des fichiers téléchargés
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "./uploads");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, `${Date.now()}_${file.originalname}`);
+//   },
+// });
+
+// const upload = multer({ storage: storage }).single("image");
+
+// Middleware pour gérer le téléchargement de fichiers
 
 const AccommodationController = {
   createAccommodation: async (req, res) => {
     try {
-      let accommodationInfo = {
+      // if (isNaN(accommodationInfo.price) || accommodationInfo.price <= 0) {
+      //   return res.status(400).json({ error: "Invalid price" });
+      // }
+      console.log(req.body);
+      const newAccommodation = await Accommodation.create({
         name: req.body.name,
+        image: req.file,
         price: req.body.price,
         description: req.body.description,
-      };
-
-      if (isNaN(accommodationInfo.price) || accommodationInfo.price <= 0) {
-        return res.status(400).json({ error: "Invalid price" });
-      }
-
-      const newAccommodation = await Accomodation.create(accommodationInfo);
-
-      res.status(201).json(newAccommodation);
+      });
+      res.json(newAccommodation);
     } catch (error) {
       console.error("Accommodation was not creating", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -26,7 +39,7 @@ const AccommodationController = {
     try {
       const accomodationId = req.params.id;
 
-      const accommodation = await Accomodation.findByPk(accomodationId);
+      const accommodation = await Accommodation.findByPk(accomodationId);
 
       if (!accommodation) {
         return res.status(404).json({ error: "Accommodation not found" });
@@ -38,7 +51,18 @@ const AccommodationController = {
     }
   },
 
-  updataAccommodation: async (req, res) => {
+  getAllAccommodations: async (req, res) => {
+    try {
+      const accommodations = await Accommodation.findAll();
+
+      res.status(200).json(accommodations);
+    } catch (error) {
+      console.error("Error getting accommodation by ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+  updateAccommodation: async (req, res) => {
     try {
       const accomodationId = req.params.id;
       const accommodationUpdate = {
@@ -47,7 +71,7 @@ const AccommodationController = {
         description: req.body.description,
       };
 
-      const accommodation = await Accomodation.findByPk(accomodationId);
+      const accommodation = await Accommodation.findByPk(accomodationId);
 
       if (!accommodation) {
         return res.status(404).json({ error: "Accommodation not found" });
@@ -63,7 +87,7 @@ const AccommodationController = {
   deleteAccommodation: async (req, res) => {
     try {
       const accommodationId = req.params.id;
-      const accommodation = await Accomodation.findByPk(accommodationId);
+      const accommodation = await Accommodation.findByPk(accommodationId);
 
       if (!accommodation) {
         return res.status(404).json({ error: "Accommodation not found" });

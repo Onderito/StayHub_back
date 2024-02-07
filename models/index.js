@@ -1,43 +1,43 @@
-'use strict';
+const Accommodation = require("./accommodation");
+const Favori = require("./favori");
+const User = require("./user");
+const Reservation = require("./reservation");
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+// un utilisateur peut publier autant d'hébergement qu'il souhaite
+User.hasMany(Accommodation, { foreignKey: "user_id", as: "accommodations" });
+// un utilisateur peut réserver autant d'hébergement qu'il souhaite
+User.belongsToMany(Accommodation, {
+  through: Reservation,
+  foreignKey: "user_id",
+  as: "reservations",
+});
+// un hébergement appartient à un seul utilisateur
+Accommodation.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+// un hébergement peut être réservé par plusieurs utilisateurs
+Accommodation.belongsToMany(User, {
+  through: Reservation,
+  foreignKey: "accommodation_id",
+  as: "reservations",
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+// un utilisateur peut avoir plusieurs hébergements en favoris
+User.belongsToMany(Accommodation, {
+  through: Favori,
+  foreignKey: "user_id",
+  as: "favoris",
+});
 
-module.exports = db;
+// un hébergement peut être mis en favoris par plusieurs utilisateurs
+Accommodation.belongsToMany(User, {
+  through: Favori,
+  foreignKey: "accommodation_id",
+  as: "favoris",
+});
+
+module.exports = {
+  Accommodation,
+  Favori,
+  User,
+  Reservation,
+};

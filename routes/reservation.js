@@ -4,7 +4,12 @@ const reservationController = require("../controllers/reservationController");
 const authenticate = require("../middleware/authenticate");
 
 router.get(
-  "/reservations/:id",
+  "/reservations/get/:id",
+  authenticate,
+  reservationController.findReservationById
+);
+router.post(
+  "/reservations/add",
   authenticate,
   reservationController.addReservation
 );

@@ -1,29 +1,31 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const User = require("./user");
 
-const Accommodation = sequelize.define("Accommodation", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-  },
-  price: {
-    type: DataTypes.FLOAT,
-  },
-  description: {
-    type: DataTypes.TEXT,
-  },
-  user_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: User, // Assurez-vous que le modèle User est correctement importé
-      key: "id",
+const Accommodation = sequelize.define(
+  "accommodation",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    image: {
+      type: DataTypes.STRING,
+    },
+    name: {
+      type: DataTypes.STRING,
+    },
+    price: {
+      type: DataTypes.FLOAT,
+    },
+    description: {
+      type: DataTypes.TEXT,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
     },
   },
-});
+  { tableName: "accommodation", timestamps: false }
+);
 
 module.exports = Accommodation;

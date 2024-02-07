@@ -33,6 +33,23 @@ const ReservationController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+  findReservationById: async (req, res) => {
+    try {
+      const reservationId = req.params.id;
+
+      const reservation = await Reservation.findByPk(reservationId);
+
+      if (!reservation) {
+        // La réservation n'a pas été trouvée
+        return res.status(404).json({ error: "Reservation not found" });
+      }
+
+      res.status(200).json(reservation);
+    } catch (error) {
+      console.error("Error getting reservation by ID:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
 };
 
 module.exports = ReservationController;

@@ -1,15 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const accommodationController = require("../controllers/accommodationController");
+const authenticate = require("../middleware/authenticate");
 
-router.post("/accommodation", accommodationController.createAccommodation);
-router.get("/accommodation/:id", accommodationController.getAccommodationById);
+router.post(
+  "/accommodation/create",
+  authenticate,
+
+  accommodationController.createAccommodation
+);
+router.get("/accommodations", accommodationController.getAllAccommodations);
+router.get(
+  "/accommodation/get/:id",
+  accommodationController.getAccommodationById
+);
 router.put(
   "/accommodation/update/:id",
-  accommodationController.updataAccommodation
+  authenticate,
+  accommodationController.updateAccommodation
 );
 router.delete(
   "/accommodation/delete/:id",
+  authenticate,
   accommodationController.deleteAccommodation
 );
 
